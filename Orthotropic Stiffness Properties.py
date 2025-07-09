@@ -12,6 +12,7 @@ This program outputs the ratio of the orthotropic-to-isotropic stiffness—i.e.,
 
 import numpy as np
 from scipy.interpolate import RectBivariateSpline
+from scipy.interpolate import make_interp_spline
 import matplotlib.pyplot as plt
 
 # User-inputs. These are based off the perforated geometry.
@@ -47,10 +48,19 @@ GpG_array = np.array([[0.0068, 0.0207, 0.0413, 0.0695, 0.1061, 0.1514, 0.2691, 0
                      [0.0095, 0.0287, 0.0569, 0.0947, 0.1424, 0.1999, 0.3401, 0.5011, 0.8035],
                      [0.0102, 0.0307, 0.0608, 0.1008, 0.1511, 0.2112, 0.3558, 0.5183, 0.8142]])
 
+eta_z_array = np.array([0.0, 0.05, 0.1, 0.15, 0.2, 0.25, 0.3, 0.4, 0.5, 0.6, 0.7, 0.8, 0.9, 1.0])
+
+EzE_array = np.array([0.2146, 0.2912, 0.3638, 0.4326, 0.4974, 0.5582, 0.6152, 0.7173, 0.8037, 0.8743, 0.9293, 0.9686, 0.9922, 1.0000])
+GzG_array = np.array([0.0000, 0.1260, 0.1965, 0.2607, 0.3221, 0.3822, 0.4415, 0.5585, 0.6716, 0.7767, 0.8680, 0.9391, 0.9844, 1.0000])
+
 # Finds curve fit (returns function to be called)
-intrp_Ep = RectBivariateSpline(nu_array, eta_array, EpE_array, kx=4, ky=4)
+intrp_Ep = RectBivariateSpline(nu_array, eta_array, EpE_array, kx=4, ky=4) #4th order polynomial found to have R² = 1 in Excel.
 intrp_vp = RectBivariateSpline(nu_array, eta_array, vp_array, kx=4, ky=4)
 intrp_GpG = RectBivariateSpline(nu_array, eta_array, GpG_array, kx=4, ky=4)
+
+
+intrp_EzE = make_interp_spline(eta_z_array, EzE_array, k=2) #Quadratic order polynomial found to have R² = 1 in Excel.
+intrp_GzG = make_interp_spline(eta_z_array, GzG_array, k=2)
 
 
 # Interpolates at user-input nu & eta
